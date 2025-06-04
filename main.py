@@ -54,6 +54,7 @@ def main(args):
     load_dotenv()
     try:
         transfer_playlist(args["ytmusic_url"], args["spotify_url"])
+        os.remove(".cache")
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
