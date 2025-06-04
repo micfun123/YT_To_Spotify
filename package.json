@@ -1,0 +1,20 @@
+{
+  "name": "yt_to_spotify",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chalk": "^5.4.1",
+    "dotenv": "^16.5.0",
+    "fuse.js": "^7.1.0",
+    "spotify-web-api-node": "^5.0.2",
+    "ytmusic-api": "^5.3.0"
+  }
+}
