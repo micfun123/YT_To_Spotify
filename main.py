@@ -10,7 +10,8 @@ def init_spotify():
         client_id=os.getenv("SPOTIFY_CLIENT_ID"),
         client_secret=os.getenv("SPOTIFY_CLIENT_SECRET"),
         redirect_uri=os.getenv("SPOTIFY_REDIRECT_URI"),
-        scope="playlist-modify-public playlist-modify-private"
+        scope="playlist-modify-public playlist-modify-private",
+        cache_path=None
     ))
 
 def extract_playlist_id(url, platform):
