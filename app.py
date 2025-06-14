@@ -297,4 +297,4 @@ if __name__ == '__main__':
     print("Starting Flask app with live update capabilities...")
     print("IMPORTANT: Make sure your .env file contains SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, and SPOTIFY_REDIRECT_URI.")
     print("Ensure your Spotify Developer Dashboard redirect URI is 'http://localhost:5000/callback'.")
-    app.run(debug=True,port=5432)
+    app.run(debug=True,port=5432,host='0.0.0.0')
