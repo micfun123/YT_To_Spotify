@@ -6,13 +6,12 @@ import spotipy
 from flask import Flask, request, render_template, redirect, url_for, session, flash, g, Response, stream_with_context
 import sys
 import time
-import json # For sending structured messages if needed, though simple strings will work for this
 
 # Load environment variables from .env file at the very start
 load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24) # Set a secret key for session management, crucial for Flask's flash messages
+app.secret_key = os.urandom(24)
 
 # --- Spotify API Configuration and Helper Functions ---
 
@@ -170,7 +169,6 @@ def transfer_playlist_generator(ytmusic_url, spotify_url, sp_client):
     if tracks_to_add:
         yield f"info:Adding {len(tracks_to_add)} matched tracks to Spotify playlist in batches..."
         try:
-            # Spotify API allows adding up to 100 tracks per request
             for i in range(0, len(tracks_to_add), 100):
                 batch = tracks_to_add[i:i+100]
                 sp_client.playlist_add_items(spotify_playlist_id, batch)
@@ -215,8 +213,6 @@ def start_transfer():
     # If authentication is needed, get_spotify_client() will return a redirect response.
     sp_client_or_redirect = get_spotify_client()
     if isinstance(sp_client_or_redirect, Response):
-        # If get_spotify_client returned a redirect, return it immediately.
-        # This will send the user to Spotify's login page.
         return sp_client_or_redirect
 
     # If we reach here, the Spotify client is authenticated for the current request.
@@ -250,14 +246,9 @@ def stream_transfer():
     if not ytmusic_url or not spotify_url:
         return Response("data:error:Playlist URLs not found in session. Please restart transfer.\n\n", mimetype='text/event-stream')
 
-    # Ensure Spotify client is authenticated before starting the stream
-    # If auth is needed here (e.g., token expired after page load),
-    # get_spotify_client will return a redirect which is handled below.
+   
     sp_client_or_redirect = get_spotify_client()
     if isinstance(sp_client_or_redirect, Response):
-        # If get_spotify_client returned a redirect (meaning auth needed),
-        # we can't directly redirect the browser from an SSE stream.
-        # Instead, send a message to the client instructing it to redirect.
         return Response("data:auth_needed:Spotify authentication required. Please refresh the page and re-authenticate.\n\n", mimetype='text/event-stream')
     
     sp_client = sp_client_or_redirect
@@ -266,10 +257,8 @@ def stream_transfer():
     def generate_messages():
         for message in transfer_playlist_generator(ytmusic_url, spotify_url, sp_client):
             yield f"data:{message}\n\n"
-            # Optional: Add a small delay to make updates more visible for testing
-            # time.sleep(0.1) 
     
-    # Use stream_with_context for Flask to properly handle the generator in a streaming response
+
     return Response(stream_with_context(generate_messages()), mimetype='text/event-stream')
 
 @app.route('/callback')
@@ -296,5 +285,5 @@ def callback():
 if __name__ == '__main__':
     print("Starting Flask app with live update capabilities...")
     print("IMPORTANT: Make sure your .env file contains SPOTIFY_CLIENT_ID, SPOTIFY_CLIENT_SECRET, and SPOTIFY_REDIRECT_URI.")
-    print("Ensure your Spotify Developer Dashboard redirect URI is 'http://localhost:5000/callback'.")
+    print("Ensure your Spotify Developer Dashboard redirect URI is 'http://127.0.0.1:5432/callback'.")
     app.run(debug=True,port=5432,host='0.0.0.0')
